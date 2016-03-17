@@ -12,7 +12,6 @@ import argparse
 import shutil
 import fileinput
 import traceback
-import ctypes
 
 # Python 2.7 and 3 ready
 try: import _winreg as winreg
@@ -25,13 +24,6 @@ __author__ = 'Moritz Wundke'
 DEFAUL_UUID = '{7F209AE1-0867-4B03-811D-243C9BAF2E74}'
 KEY_TYPE = winreg.HKEY_CURRENT_USER
 KEY_NAME = 'SOFTWARE\\Epic Games\\Unreal Engine\\Builds'
-
-def show_message_box(title, message):
-    """
-    Show a windows message box
-    """
-    MessageBox = ctypes.windll.user32.MessageBoxA
-    MessageBox(None, message, title, 0)
 
 def print_error(msg):
     print("ERROR: %s" % msg)
@@ -129,7 +121,7 @@ def register_engine(uuid, path, force):
 
     set_key_data(key, uuid, path)
 
-    show_message_box('Done', 'Engine has been registered')
+    print '[Done] Engine has been registered'
 
 def cleanup_engines():
     """
@@ -148,12 +140,11 @@ def cleanup_engines():
     except WindowsError:
         pass
 
-    show_message_box('Done', 'Engine registry cleaned up!')
+    print '[Done] Engine registry cleaned up!'
 
 def main():
     parser = argparse.ArgumentParser(description='UE4 engine registration helper (%s). Tragnarion Studios - by %s' % (__version__, __author__))
 
-    parser.add_argument('-v', '--version', action='version', version=__version__)
     parser.add_argument('-c', help='Cleanup engine registries that are not valid anymore', action="store_true")
     parser.add_argument('-f', help='Overwrite registration if path already registered', action="store_true", default=True)
     parser.add_argument('-u','--uuid', help='UUID used for registration, if not specified \'%s\' will be used or the content of uuid.txt if present.' % DEFAUL_UUID)
@@ -177,7 +168,7 @@ def main():
             register_engine(args.uuid, os.path.normcase(args.path), args.f)
     except Exception as e:
         traceback.print_exc()
-        show_message_box('Error', str(e))
+        print '[Error]', str(e)
 
 if __name__ == "__main__":
     main()
